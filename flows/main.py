@@ -35,7 +35,7 @@ def get_sentiment(
     }
 
     # Send a GET request to the API endpoint and parse the JSON response
-    logger.info("Requesting data from %s", url)
+    print("Requesting data from %s", url)
     response = requests.get(
         url,
         params=params,
@@ -44,11 +44,11 @@ def get_sentiment(
 
     # Check if the request was successful
     if response.status_code != 200:
-        logger.info("Error: Request failed with status code %s", response.status_code)
+        print("Error: Request failed with status code %s", response.status_code)
         return None
 
     # Extract the relevant data for each article and store it in a list of dictionaries
-    logger.info("Successfully retrieved data")
+    print("Successfully retrieved data")
     data = response.json()
 
     articles_data = [
