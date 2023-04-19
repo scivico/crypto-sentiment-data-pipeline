@@ -6,9 +6,9 @@ import requests
 
 @task(name="Get Sentiment")
 def get_sentiment(
-    time_from: str = "20220410T3421",
-    time_to: str = "20220412T3421",
-    apikey: str = "",
+    time_from: str,
+    time_to: str,
+    apikey: str,
 ) -> pd.DataFrame:
     """
     Fetches news articles sentiment data for a specified time range from an API.
@@ -80,8 +80,8 @@ def get_sentiment(
 
 @flow(log_prints=True)
 def main(
-    time_from: str = "20220410T3421",
-    time_to: str = "20220412T3421",
+    time_from: str = "20220410T0130",
+    time_to: str = "20220415T0130",
     apikey: str = "",
 ) -> None:
     """
