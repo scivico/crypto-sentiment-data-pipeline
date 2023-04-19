@@ -35,7 +35,7 @@ def get_sentiment(
     }
 
     # Send a GET request to the API endpoint and parse the JSON response
-    print("Requesting data from %s", url)
+    print("Requesting data for %s", params)
     response = requests.get(
         url,
         params=params,
