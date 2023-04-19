@@ -52,32 +52,6 @@ on:
         default: 'default'
         type: string
 jobs:
-  setup-blocks:
-    name: Setup Prefect blocks
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - id: setup-blocks
-        name: Create Prefect blocks
-        uses: ./.github/actions/setup-blocks
-        with:
-          prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
-          prefect_api_url: ${{ secrets.PREFECT_API_URL }}
-          gcp_creds_block_name: ${{ github.event.inputs.prefect_block_name }}
-          github_block_name: ${{ github.event.inputs.prefect_block_name }}
-          cloudrun_block_name: ${{ github.event.inputs.prefect_block_name }}
-          gcs_block_name: ${{ github.event.inputs.prefect_block_name }}
-          bq_block_name: ${{ github.event.inputs.prefect_block_name }}
-          region: ${{ github.event.inputs.region }}
-          gcp_credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-          artifact_repository: ${{ github.event.inputs.artifact_repository }}
-          bucket_suffix: ${{ github.event.inputs.bucket_suffix }}
-          dataset_name: ${{ github.event.inputs.dataset_name }}
-          image_name: 'deployments'
-          python_version: '3.10'
-          install_command: 'pip install .'
-
   collect-flows:
     name: Collect Prefect flows
     runs-on: ubuntu-latest
@@ -101,11 +75,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - id: get-flow
         name: Get Prefect flow entrypoint
         run: |
           export FLOW_NAME=$(basename ${{ matrix.flows }} .py)
           echo "entrypoint=${{ matrix.flows }}:$FLOW_NAME" >> $GITHUB_OUTPUT
+
       - id: setup-deployment
         name: Setup Prefect deployment
         uses: ./.github/actions/setup-deployment
