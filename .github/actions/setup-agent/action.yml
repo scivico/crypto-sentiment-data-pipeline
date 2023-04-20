@@ -68,8 +68,11 @@ runs:
         docker push "${{ env.RAW_IMAGE }}"
         docker push "${{ env.IMAGE_URI }}"
       shell: bash
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
+
+    - id: terminate-if-exists
+      run: gcloud compute instances delete "${{ inputs.machine_name }}" --zone "${{ inputs.zone }}" --quiet --verbosity=error
+      continue-on-error: true
+      shell: bash
 
     - id: deploy-vm
       name: Deploy Prefect Agent VM

@@ -70,7 +70,7 @@ runs:
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1
       with:
-        virtualenvs-in-project: true
+        virtualenvs-create: false
 
     - name: Install dependencies
       run: |

@@ -53,7 +53,7 @@ on:
         type: string
 jobs:
   delete-infrastructure:
-    name: Delete GCP infrastructure
+    name: Delete infrastructure
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
