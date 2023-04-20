@@ -75,7 +75,7 @@ runs:
         virtualenvs-create: false
 
     - uses: snok/install-poetry@v1
-    - run: poetry config --local
+    - run: poetry config virtualenvs.create false --local
       shell: bash
 
     - name: Install dependencies
