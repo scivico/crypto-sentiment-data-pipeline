@@ -44,9 +44,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
-
     - id: set-image
       run: |
         echo "RAW_IMAGE=${{ inputs.region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.artifact_repository }}/${{ inputs.image_name }}" >> $GITHUB_ENV
@@ -67,11 +64,6 @@ runs:
         docker tag "${{ env.RAW_IMAGE }}" "${{ env.IMAGE_URI }}"
         docker push "${{ env.RAW_IMAGE }}"
         docker push "${{ env.IMAGE_URI }}"
-      shell: bash
-
-    - id: terminate-if-exists
-      run: gcloud compute instances delete "${{ inputs.machine_name }}" --zone "${{ inputs.zone }}" --quiet --verbosity=error
-      continue-on-error: true
       shell: bash
 
     - id: deploy-vm
