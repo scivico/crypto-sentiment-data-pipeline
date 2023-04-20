@@ -72,7 +72,7 @@ runs:
 
     - name: Configure Poetry
       run: |
-        poetry config virtualenvs.in-project true virtualenvs.create false --local
+        poetry config virtualenvs.in-project true --local
       shell: bash
 
     - name: Install dependencies
