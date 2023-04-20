@@ -67,13 +67,10 @@ runs:
     - name: Set up Python
       uses: actions/setup-python@v4
 
-    - name: Setup Poetry
-      uses: abatilo/actions-poetry@v2.1.6
-
-    - name: Configure Poetry
-      run: |
-        poetry config virtualenvs.in-project true --local
-      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-in-project: true
 
     - name: Install dependencies
       run: |
