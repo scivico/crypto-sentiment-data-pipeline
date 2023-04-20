@@ -16,4 +16,10 @@ ENV PYTHONUNBUFFERED True
 
 COPY flows/ /opt/prefect/flows/
 
+COPY pyproject.toml poetry.lock /
+
+RUN curl -sSL https://install.python-poetry.org | python - \
+    && poetry config virtualenvs.in-project true virtualenvs.create false --local \
+    && poetry install --no-root
+
 ENTRYPOINT ["prefect", "agent", "start", "--pool", "default-agent-pool"]

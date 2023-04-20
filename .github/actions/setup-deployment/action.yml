@@ -45,14 +45,18 @@ runs:
   steps:
     - name: Set up Python
       uses: actions/setup-python@v4
-      with:
-        python-version: '${{ inputs.python_version }}'
-        cache: 'pip'
 
-    - id: install-prefect
+    - name: 'Setup Poetry'
+      uses: abatilo/actions-poetry@v2.1.6
+
+    - name: 'Configure Poetry'
       run: |
-        pip install prefect
-        ${{ inputs.install_command }}
+        poetry config virtualenvs.in-project true virtualenvs.create false --local
+      shell: bash
+
+    - name: 'Install dependencies'
+      run: |
+        poetry install --no-root
       shell: bash
 
     - id: login-prefect
@@ -67,6 +71,6 @@ runs:
         credentials_json: '${{ inputs.gcp_credentials_json }}'
 
     - run: |
-        prefect deployment build ${{ inputs.flow_entrypoint }} -n ${{ inputs.deployment }} -q ${{ inputs.queue }} \
+        poetry run prefect deployment build ${{ inputs.flow_entrypoint }} -n ${{ inputs.deployment }} -q ${{ inputs.queue }} \
         -sb "${{ inputs.github_block_name }}" -ib "${{ inputs.cloudrun_block_name }}" --skip-upload -a -v $GITHUB_SHA
       shell: bash

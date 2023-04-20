@@ -1,4 +1,5 @@
-name: 'Delete Prefect Cloud execution layer on Google Cloud Run'
+name: 'Delete GCP infrastructure'
+description: 'Delete Prefect Cloud execution layer on Google Cloud Run'
 branding:
   icon: cloud
   color: yellow
@@ -25,17 +26,14 @@ inputs:
     description: Postfix for GCS bucket name
     required: true
     default: 'raw-crypto-data'
-    type: string
   artifact_repository:
     description: Artifact Registry Repository
     required: true
     default: 'prefect-images'
-    type: string
   dataset_name:
     description: BigQuery dataset name
     required: true
     default: 'crypto_data'
-    type: string
   machine_name:
     description: 'GCP Compute Engine instance name'
     required: false
