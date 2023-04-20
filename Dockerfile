@@ -19,7 +19,7 @@ RUN apt-get update -qq && \
     curl
 
 RUN curl -sSL https://install.python-poetry.org | python - \
-    && poetry config virtualenvs.in-project true --local \
+    && poetry config virtualenvs.create false --local \
     && poetry install --no-root
 
 ENTRYPOINT ["prefect", "agent", "start", "--pool", "default-agent-pool"]
