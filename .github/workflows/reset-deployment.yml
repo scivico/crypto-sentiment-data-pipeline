@@ -103,6 +103,7 @@ jobs:
 
   collect-flows:
     name: Collect Prefect flows
+    needs: setup-blocks
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
