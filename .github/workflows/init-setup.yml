@@ -53,7 +53,7 @@ on:
         type: string
 jobs:
   setup-infra:
-    name: Setup GCP infrastructure
+    name: Setup infrastructure
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
