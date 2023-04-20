@@ -45,6 +45,8 @@ runs:
   steps:
     - name: Set up Python
       uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python_version }}
 
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1
