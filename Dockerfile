@@ -1,5 +1,7 @@
 FROM prefecthq/prefect:2-python3.10
 
+ENV PATH="/root/.local/bin:${PATH}"
+
 ARG PREFECT_API_KEY
 ENV PREFECT_API_KEY=$PREFECT_API_KEY
 
