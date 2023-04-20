@@ -70,8 +70,8 @@ jobs:
           artifact_repository: ${{ github.event.inputs.artifact_repository }}
 
       - id: setup-agent
-        name: Deploy Prefect agent VM
-        uses: ./.github/actions/setup-vm
+        name: Setup and deploy Prefect agent
+        uses: ./.github/actions/setup-agent
         with:
           prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
