@@ -1,14 +1,14 @@
-from platform import node, platform
-from prefect import flow, task, get_run_logger
 import pandas as pd
 import requests
+from platform import node, platform
+from prefect import flow, task, get_run_logger
 
 
-@task(name="Get Sentiment")
-def get_sentiment(
+@flow(name="Sentiment Data")
+def sentiment_data(
     time_from: str,
     time_to: str,
-    apikey: str,
+    api_key: str,
 ) -> pd.DataFrame:
     """
     Fetches news articles sentiment data for a specified time range from an API.
@@ -27,7 +27,7 @@ def get_sentiment(
     params = {
         "function": "NEWS_SENTIMENT",
         "topics": "blockchain",
-        "apikey": apikey,
+        "apikey": api_key,
         "time_from": time_from,
         "time_to": time_to,
         "sort": "RELEVANCE",
@@ -78,21 +78,23 @@ def get_sentiment(
     return pd.DataFrame(articles_data)
 
 
-@flow(log_prints=True)
+@flow(name="Main", log_prints=True)
 def main(
     time_from: str = "20220410T0130",
     time_to: str = "20220415T0130",
-    apikey: str = "",
+    av_api_key: str = "AV_API_KEY",
 ) -> None:
     """
-    Calls the `get_sentiment` function with sample arguments and prints
-    the first five rows of the resulting dataframe.
+    One flow to rule them all. Call the sub-flows to get daily sentiment and market
+    data for the selected time range, then the sub-flows to upload the data to the
+    GCS bucket, then the sub-flows to load the data into BigQuery and finally the
+    sub-flows to run the DBT models and generate the analytics-ready data.
     """
 
-    sentiment = get_sentiment(
+    sentiment = sentiment_data(
         time_from,
         time_to,
-        apikey,
+        av_api_key,
     )
     print(sentiment.head())
 

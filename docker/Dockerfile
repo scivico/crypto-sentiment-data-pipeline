@@ -10,7 +10,7 @@ ENV PREFECT_API_URL=$PREFECT_API_URL
 
 ENV PYTHONUNBUFFERED True
 
-COPY flows/ /opt/prefect/flows/
+COPY ../prefect/flows /opt/prefect/flows/
 
 COPY pyproject.toml poetry.lock /
 

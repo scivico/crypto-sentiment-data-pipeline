@@ -1,0 +1,58 @@
+name: "Setup GCP services"
+branding:
+  icon: cloud
+  color: yellow
+description: "Setup GCP services"
+inputs:
+  gcp-region:
+    description: GCP region
+    required: false
+    default: "us-central1"
+  ar_repository:
+    description: Artifact Registry Repository
+    required: true
+    default: "prefect-images"
+  bucket_name:
+    description: "GCS bucket suffix"
+    required: false
+    default: "raw-crypto-data"
+  bucket_location:
+    description: "GCS location"
+    required: false
+    default: "US"
+  dataset_name:
+    description: "BigQuery dataset name"
+    required: false
+    default: "crypto_data"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: hashicorp/setup-terraform@v2
+
+    - id: terraform-init
+      name: Terraform Init
+      run: terraform -chdir="./terraform" init
+      shell: bash
+
+    - id: terraform-format
+      name: Terraform Format
+      run: terraform -chdir="./terraform" fmt
+      shell: bash
+
+    - id: terraform-validate
+      name: Terraform Validate
+      run: terraform -chdir="./terraform" validate
+      shell: bash
+
+    - id: terraform-apply
+      name: Terraform Apply
+      run: |
+        terraform -chdir="./terraform" apply \
+          -auto-approve \
+          -var="gcp-region=${{ inputs.gcp-region }}"
+          -var="ar_repository=${{ inputs.ar_repository }}" \
+          -var="bucket_name=$GCP_PROJECT-${{ inputs.bucket_name }}" \
+          -var="bucket_location=${{ inputs.bucket_location }}" \
+          -var="dataset_name=${{ inputs.dataset_name }}" \
+      shell: bash
