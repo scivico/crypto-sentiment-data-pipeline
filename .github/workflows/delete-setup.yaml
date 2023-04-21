@@ -1,4 +1,4 @@
-name: "Delete Infrastructure"
+name: "Delete Setup"
 on:
   workflow_dispatch:
     inputs:

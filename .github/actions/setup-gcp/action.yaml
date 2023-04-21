@@ -4,7 +4,7 @@ branding:
   color: yellow
 description: "Setup GCP services"
 inputs:
-  gcp-region:
+  gcp_region:
     description: GCP region
     required: false
     default: "us-central1"
@@ -50,7 +50,7 @@ runs:
       run: |
         terraform -chdir="./terraform" apply \
           -auto-approve \
-          -var="gcp-region=${{ inputs.gcp-region }}"
+          -var="gcp_region=${{ inputs.gcp_region }}"
           -var="ar_repository=${{ inputs.ar_repository }}" \
           -var="bucket_name=$GCP_PROJECT-${{ inputs.bucket_name }}" \
           -var="bucket_location=${{ inputs.bucket_location }}" \

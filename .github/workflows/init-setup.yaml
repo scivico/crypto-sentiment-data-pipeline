@@ -73,6 +73,7 @@ jobs:
         uses: ./.github/actions/setup-gcp
         with:
           ar_repository: ${{ github.event.inputs.ar_repository }}
+          gcp_region: ${{ github.event.inputs.gcp_region }}
           bucket_location: ${{ github.event.inputs.bucket_location }}
           bucket_name: ${{ github.event.inputs.bucket_name }}
           dataset_name: ${{ github.event.inputs.dataset_name }}
