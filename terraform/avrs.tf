@@ -16,14 +16,14 @@ variable "bucket_name" {
   default     = "raw-crypto-data"
 }
 
-variable "bucket_location" {
-  type        = string
-  description = "Location of the bucket and dataset"
-  default     = "US"
-}
-
 variable "dataset_name" {
   type        = string
   description = "Name of the dataset to create"
   default     = "crypto_data"
+}
+
+variable "data_location" {
+  type        = string
+  description = "Location of the bucket and dataset"
+  default     = "US"
 }

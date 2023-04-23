@@ -26,15 +26,15 @@ on:
         required: true
         default: "raw-crypto-data"
         type: string
-      bucket_location:
-        description: Location of the GCS bucket
-        required: true
-        default: "US"
-        type: string
       dataset_name:
         description: BigQuery dataset name
         required: true
         default: "crypto_data"
+        type: string
+      data_location:
+        description: Location of the GCS bucket
+        required: true
+        default: "US"
         type: string
       prefect_block:
         description: Standard Prefect blocks name

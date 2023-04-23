@@ -21,20 +21,21 @@ on:
         description: Prefect agent VM name
         required: true
         default: "prefect-agent"
+        type: string
       bucket_name:
-        description: Postfix for GCS bucket name
+        description: GCS bucket name
         required: true
         default: "raw-crypto-data"
-        type: string
-      bucket_location:
-        description: Location of the GCS bucket
-        required: true
-        default: "US"
         type: string
       dataset_name:
         description: BigQuery dataset name
         required: true
         default: "crypto_data"
+        type: string
+      data_location:
+        description: Area for storing data
+        required: true
+        default: "US"
         type: string
       prefect_block:
         description: Standard Prefect blocks name
@@ -73,11 +74,10 @@ jobs:
         uses: ./.github/actions/setup-gcp
         with:
           ar_repository: ${{ github.event.inputs.ar_repository }}
-          gcp_region: ${{ github.event.inputs.gcp_region }}
-          bucket_location: ${{ github.event.inputs.bucket_location }}
+          data_location: ${{ github.event.inputs.data_location }}
           bucket_name: ${{ github.event.inputs.bucket_name }}
           dataset_name: ${{ github.event.inputs.dataset_name }}
-          gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          gcp_region: ${{ github.event.inputs.gcp_region }}
 
       - id: setup-agent
         name: Setup and deploy Prefect agent

@@ -18,7 +18,7 @@ resource "google_artifact_registry_repository" "my-repo" {
 
 resource "google_storage_bucket" "data-lake-bucket" {
   name                        = var.bucket_name
-  location                    = var.bucket_location
+  location                    = var.data_location
   uniform_bucket_level_access = true
   force_destroy               = true
   versioning {
@@ -28,7 +28,7 @@ resource "google_storage_bucket" "data-lake-bucket" {
 
 resource "google_bigquery_dataset" "dataset" {
   dataset_id                 = var.dataset_name
-  location                   = var.bucket_location
+  location                   = var.data_location
   friendly_name              = "Crypto Data"
   description                = "Dataset for crypto market analysis"
   delete_contents_on_destroy = true
