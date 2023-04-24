@@ -154,5 +154,5 @@ jobs:
           prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
           prefect_block: ${{ github.event.inputs.prefect_block }}
-          prefect_deployment: ${{ github.event.inputs.deployment }}
+          prefect_deployment: ${{ github.event.inputs.prefect_deployment }}
           prefect_queue: ${{ github.event.inputs.prefect_queue }}

@@ -1,15 +1,19 @@
+"""
+This module contains a Prefect flow for fetching news articles sentiment data from an API for a
+specified time range, and storing the data in a Pandas DataFrame.
+"""
+import time
 import pandas as pd
 import requests
+from datetime import timedelta, date, datetime
 from platform import node, platform
 from prefect import flow, task, get_run_logger
 
 
-@flow(name="Sentiment Data")
-def sentiment_data(
-    time_from: str,
-    time_to: str,
-    api_key: str,
-) -> pd.DataFrame:
+@task(
+    name="Get Daily Sentiment Data", retries=3, retry_delay_seconds=61, log_prints=True
+)
+def get_sentiment_data(time_from: str, time_to: str, api_key: str) -> pd.DataFrame:
     """
     Fetches news articles sentiment data for a specified time range from an API.
 
@@ -45,18 +49,18 @@ def sentiment_data(
     # Check if the request was successful
     if response.status_code != 200:
         print("Error: Request failed with status code %s", response.status_code)
-        return None
+    else:
+        print("Successfully retrieved data")
 
     # Extract the relevant data for each article and store it in a list of dictionaries
-    print("Successfully retrieved data")
     data = response.json()
+    print(data)
 
     articles_data = [
         {
             "title": article["title"],
             "url": article["url"],
             "published_at": pd.to_datetime(article["time_published"]),
-            "authors": article["authors"],
             "source": article["source"],
             "source_domain": article["source_domain"],
             "relevance_score": next(
@@ -78,11 +82,47 @@ def sentiment_data(
     return pd.DataFrame(articles_data)
 
 
-@flow(name="Main", log_prints=True)
+@flow(name="Sentiment Data", log_prints=True)
+def sentiment(time_from: str, time_to: str, av_api_key: str) -> pd.DataFrame:
+    """
+    Orchestrates the daily sentiment data collection for the given time range.
+
+    Args:
+        time_from (str): The start time of the time range to retrieve.
+        time_to (str): The end time of the time range to retrieve.
+        av_api_key (str): The API key required to access the data.
+
+    Returns:
+        pd.DataFrame: A Pandas dataframe containing the extracted data for each news article.
+    """
+    sentiment_df = pd.DataFrame()
+    current_date = (
+        datetime.strptime(time_from, "%Y%m%d")
+        if isinstance(time_from, str)
+        else time_from
+    )
+    end_date = (
+        datetime.strptime(time_to, "%Y%m%d") if isinstance(time_to, str) else time_to
+    )
+
+    while current_date < end_date:
+        next_date = current_date + timedelta(days=1)
+        daily_sentiment = get_sentiment_data(
+            current_date.strftime("%Y%m%d") + "T0000",
+            next_date.strftime("%Y%m%d") + "T0000",
+            av_api_key,
+        )
+        sentiment_df = sentiment_df.append(daily_sentiment, ignore_index=True)
+        current_date += timedelta(days=1)
+        time.sleep(12)
+
+    print(sentiment_df.head())
+
+
 def main(
-    time_from: str = "20220410T0130",
-    time_to: str = "20220415T0130",
-    av_api_key: str = "AV_API_KEY",
+    time_from: date = date.today() - timedelta(days=1),
+    time_to: date = date.today(),
+    av_api_key: str = "SAMPLE_KEY",
 ) -> None:
     """
     One flow to rule them all. Call the sub-flows to get daily sentiment and market
@@ -91,12 +131,7 @@ def main(
     sub-flows to run the DBT models and generate the analytics-ready data.
     """
 
-    sentiment = sentiment_data(
-        time_from,
-        time_to,
-        av_api_key,
-    )
-    print(sentiment.head())
+    sentiment(time_from, time_to, av_api_key)
 
 
 if __name__ == "__main__":
