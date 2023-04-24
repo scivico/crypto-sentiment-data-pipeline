@@ -38,6 +38,8 @@ runs:
     - id: setup-python
       name: Set up Python
       uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
     - id: install-poetry
       name: Install and configure Poetry
@@ -47,7 +49,7 @@ runs:
 
     - id: install-dependencies
       name: "Install dependencies"
-      run: poetry install --without dev --no-root
+      run: poetry install --no-root --without dev
       shell: bash
 
     - id: login-prefect

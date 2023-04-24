@@ -44,6 +44,8 @@ runs:
     - id: setup-python
       name: Set up Python
       uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
     - id: install-poetry
       name: Install Poetry
