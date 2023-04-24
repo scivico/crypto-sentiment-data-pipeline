@@ -20,6 +20,6 @@ RUN apt-get update -qq && \
 
 RUN curl -sSL https://install.python-poetry.org | python - \
     && poetry config virtualenvs.create false --local \
-    && poetry install --no-root
+    && poetry install --without prefect,dev --no-root
 
 ENTRYPOINT ["prefect", "agent", "start", "--pool", "default-agent-pool"]
