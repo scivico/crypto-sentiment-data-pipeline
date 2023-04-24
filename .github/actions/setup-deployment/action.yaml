@@ -65,8 +65,8 @@ runs:
         poetry run prefect deployment build ${{ inputs.flow_entrypoint }} \
           --name ${{ inputs.prefect_deployment }} \
           --work-queue ${{ inputs.prefect_queue }} \
-          --storage-block github/${{ inputs.prefect_block }} \
-          --infra-block cloud-run-job/${{ inputs.prefect_block }} \
+          --storage-block "github/${{ inputs.prefect_block }}" \
+          --infra-block "cloud-run-job/${{ inputs.prefect_block }}" \
           --param av_api_key="${{ inputs.av_api_key }}" \
           --skip-upload \
           --apply \
