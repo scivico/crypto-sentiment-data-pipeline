@@ -8,7 +8,7 @@ on:
         default: "us-central1"
         type: string
       gcp_zone:
-        description: Zone in the selected GCP region
+        description: Zone in the GCP region
         required: true
         default: "us-central1-a"
         type: string
@@ -23,7 +23,7 @@ on:
         default: "prefect-agent"
         type: string
       bucket_name:
-        description: GCS bucket name
+        description: Cloud Storage bucket name
         required: true
         default: "raw-crypto-data"
         type: string
@@ -33,12 +33,12 @@ on:
         default: "crypto_data"
         type: string
       data_location:
-        description: Area for storing data
+        description: Area for data storage
         required: true
         default: "US"
         type: string
       prefect_block:
-        description: Standard Prefect blocks name
+        description: Prefect blocks name
         required: true
         default: "default"
         type: string
@@ -58,15 +58,18 @@ jobs:
     name: Setup infrastructure
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - id: checkout
+        name: Checkout
         uses: actions/checkout@v3
 
-      - name: Authenticate to Google Cloud
+      - id: login-gcloud
+        name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
 
-      - name: Set up Cloud SDK
+      - id: setup-sdk
+        name: Configure Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
       - id: setup-gcp
@@ -111,7 +114,8 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout
+      - id: checkout
+        name: Checkout
         uses: actions/checkout@v3
 
       - id: set-matrix
@@ -129,7 +133,8 @@ jobs:
       matrix:
         flows: ${{ fromJson(needs.collect-flows.outputs.matrix) }}
     steps:
-      - name: Checkout
+      - id: checkout
+        name: Checkout
         uses: actions/checkout@v3
 
       - id: get-flow

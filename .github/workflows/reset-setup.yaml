@@ -8,7 +8,7 @@ on:
         default: "us-central1"
         type: string
       gcp_zone:
-        description: Zone in the selected GCP region
+        description: Zone in the GCP region
         required: true
         default: "us-central1-a"
         type: string
@@ -22,7 +22,7 @@ on:
         required: true
         default: "prefect-agent"
       bucket_name:
-        description: Postfix for GCS bucket name
+        description: Cloud Storage bucket name
         required: true
         default: "raw-crypto-data"
         type: string
@@ -32,7 +32,7 @@ on:
         default: "crypto_data"
         type: string
       prefect_block:
-        description: Standard Prefect blocks name
+        description: Prefect blocks name
         required: true
         default: "default"
         type: string
@@ -52,18 +52,22 @@ jobs:
     name: Reset infrastructure
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - id: checkout
+        name: Checkout
         uses: actions/checkout@v3
 
-      - name: Authenticate to Google Cloud
+      - id: login-gcloud
+        name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
 
-      - name: Set up Cloud SDK
+      - id: setup-sdk
+        name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Terminate existing Prefect agent
+      - id: delete-vm
+        name: Terminate existing Prefect agent
         run: |
           gcloud compute instances delete "${{ github.event.inputs.vm_name }}" \
             --zone="${{ github.event.inputs.gcp_zone }}" \
@@ -105,7 +109,8 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout
+      - id: checkout
+        name: Checkout
         uses: actions/checkout@v3
 
       - id: set-matrix
@@ -123,7 +128,8 @@ jobs:
       matrix:
         flows: ${{ fromJson(needs.collect-flows.outputs.matrix) }}
     steps:
-      - name: Checkout
+      - id: checkout
+        name: Checkout
         uses: actions/checkout@v3
 
       - id: get-flow
