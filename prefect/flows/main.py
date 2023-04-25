@@ -3,19 +3,21 @@ This module contains a Prefect flow for fetching news articles sentiment data fr
 specified time range, and storing the data in a Pandas DataFrame.
 """
 import time
+from datetime import timedelta, date, datetime, timezone
+from platform import node, platform
 import pandas as pd
 import requests
-from datetime import timedelta, date, datetime
-from platform import node, platform
+
+from prefect_gcp.cloud_storage import GcsBucket
+from prefect.artifacts import create_table_artifact
 from prefect import flow, task, get_run_logger
 
 
-@task(
-    name="Get Daily Sentiment Data", retries=3, retry_delay_seconds=61, log_prints=True
-)
+@task(name="Get Sentiment Data", retries=3, retry_delay_seconds=61, log_prints=True)
 def get_sentiment_data(time_from: str, time_to: str, api_key: str) -> pd.DataFrame:
     """
-    Fetches news articles sentiment data for a specified time range from an API.
+    Fetches sentiment data for crypto news articles for a specified time range from the
+    Alpha Vantage API.
 
     Args:
         time_from: The start time of the time range to retrieve, in the format "YYYYMMDDTHHMM".
@@ -48,19 +50,20 @@ def get_sentiment_data(time_from: str, time_to: str, api_key: str) -> pd.DataFra
 
     # Check if the request was successful
     if response.status_code != 200:
-        print("Error: Request failed with status code %s", response.status_code)
+        print(f"Error: Request failed with status code {response.status_code}")
     else:
-        print("Successfully retrieved data")
+        print(f"Successfully retrieved data with status code {response.status_code}")
 
     # Extract the relevant data for each article and store it in a list of dictionaries
     data = response.json()
-    print(data)
-
     articles_data = [
         {
             "title": article["title"],
             "url": article["url"],
-            "published_at": pd.to_datetime(article["time_published"]),
+            "published_at": datetime.strptime(
+                article["time_published"],
+                "%Y%m%dT%H%M%S",
+            ).strftime("%Y-%m-%d %H:%M:%S"),
             "source": article["source"],
             "source_domain": article["source_domain"],
             "relevance_score": next(
@@ -78,64 +81,93 @@ def get_sentiment_data(time_from: str, time_to: str, api_key: str) -> pd.DataFra
         for article in data["feed"]
     ]
 
-    # Return a Pandas dataframe from the extracted data
-    return pd.DataFrame(articles_data)
+    # Send the extracted data to Prefect Cloud as an artifact
+    create_table_artifact(
+        key="sentiment-data",
+        table=articles_data,
+        description=f"Alpha Vantage API response for {params}",
+    )
+
+    # Convert the sentiment data to a Pandas dataframe
+    sentiment_df = pd.DataFrame(articles_data).astype(
+        {
+            "published_at": "datetime64",
+            "relevance_score": "float64",
+            "overall_sentiment_score": "float64",
+        }
+    )
+
+    # Return the Pandas dataframe from the extracted data
+    return sentiment_df
 
 
-@flow(name="Sentiment Data", log_prints=True)
-def sentiment(time_from: str, time_to: str, av_api_key: str) -> pd.DataFrame:
+@flow(name="Process Sentiment Data", log_prints=True)
+def process_sentiment_data(
+    start_date: date,
+    end_date: date,
+    av_api_key: str,
+) -> None:
     """
     Orchestrates the daily sentiment data collection for the given time range.
 
     Args:
-        time_from (str): The start time of the time range to retrieve.
-        time_to (str): The end time of the time range to retrieve.
+        start_date (str): The start date of the time range to retrieve.
+        end_date (str): The end date of the time range to retrieve.
         av_api_key (str): The API key required to access the data.
 
     Returns:
         pd.DataFrame: A Pandas dataframe containing the extracted data for each news article.
     """
-    sentiment_df = pd.DataFrame()
-    current_date = (
-        datetime.strptime(time_from, "%Y%m%d")
-        if isinstance(time_from, str)
-        else time_from
+
+    # Convert the start and end dates to datetime objects if they are not already
+    start_date = (
+        start_date
+        if isinstance(start_date, date)
+        else datetime.strptime(start_date, "%Y%m%d")
     )
     end_date = (
-        datetime.strptime(time_to, "%Y%m%d") if isinstance(time_to, str) else time_to
+        end_date
+        if isinstance(end_date, date)
+        else datetime.strptime(end_date, "%Y%m%d")
     )
 
-    while current_date < end_date:
-        next_date = current_date + timedelta(days=1)
-        daily_sentiment = get_sentiment_data(
-            current_date.strftime("%Y%m%d") + "T0000",
-            next_date.strftime("%Y%m%d") + "T0000",
+    # Load the GCS bucket
+    gcs_bucket = GcsBucket.load("default")
+
+    # Iterate through each day in the time range, and fetch and upload the sentiment data
+    while start_date < end_date:
+        sentiment_df = get_sentiment_data(
+            start_date.strftime("%Y%m%d") + "T0000",
+            start_date.strftime("%Y%m%d") + "T2359",
             av_api_key,
         )
-        sentiment_df = sentiment_df.append(daily_sentiment, ignore_index=True)
-        current_date += timedelta(days=1)
+
+        gcs_bucket.upload_from_dataframe(
+            sentiment_df,
+            f'sentiment/{start_date.strftime("%Y%m%d")}',
+            "parquet_gzip",
+        )
+
+        start_date += timedelta(days=1)
+
         time.sleep(12)
 
-    print(sentiment_df.head())
 
-
+@flow(name="Main Flow", log_prints=True)
 def main(
-    time_from: date = date.today() - timedelta(days=1),
-    time_to: date = date.today(),
+    start_date: date = datetime.now(timezone.utc).date() - timedelta(days=1),
+    end_date: date = datetime.now(timezone.utc).date(),
     av_api_key: str = "SAMPLE_KEY",
 ) -> None:
     """
-    One flow to rule them all. Call the sub-flows to get daily sentiment and market
-    data for the selected time range, then the sub-flows to upload the data to the
-    GCS bucket, then the sub-flows to load the data into BigQuery and finally the
-    sub-flows to run the DBT models and generate the analytics-ready data.
+    Sets up Prefect flows for fetching sentiment and market data for a specified time
+    and uploading it to a GCS bucket.
     """
 
-    sentiment(time_from, time_to, av_api_key)
+    process_sentiment_data(start_date, end_date, av_api_key)
 
 
 if __name__ == "__main__":
-
     logger = get_run_logger()
     logger.info("Network: %s. Instance: %s. Agent is healthy ✅️", node(), platform())
 

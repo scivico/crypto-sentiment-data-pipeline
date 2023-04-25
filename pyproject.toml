@@ -10,7 +10,7 @@ packages = [{include = "crypto_fear_and_greed_analysis"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 prefect = "^2.10.4"
-prefect-gcp = {extras = ["bigquery", "cloud-storage"], version = "^0.4.0"}
+prefect-gcp = {extras = ["bigquery", "cloud-storage"], version = "^0.4.1"}
 
 [tool.poetry.group.prefect.dependencies]
 pandas = "^2.0.0"
