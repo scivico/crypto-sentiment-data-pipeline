@@ -91,7 +91,7 @@ def get_sentiment_data(time_from: str, time_to: str, api_key: str) -> pd.DataFra
     # Convert the sentiment data to a Pandas dataframe
     sentiment_df = pd.DataFrame(articles_data).astype(
         {
-            "published_at": "datetime64",
+            "published_at": "datetime64[ns]",
             "relevance_score": "float64",
             "overall_sentiment_score": "float64",
         }
@@ -164,11 +164,12 @@ def main(
     and uploading it to a GCS bucket.
     """
 
+    logger = get_run_logger()
+    logger.info("Network: %s. Instance: %s. Agent is healthy ✅️", node(), platform())
+
     process_sentiment_data(start_date, end_date, av_api_key)
 
 
 if __name__ == "__main__":
-    logger = get_run_logger()
-    logger.info("Network: %s. Instance: %s. Agent is healthy ✅️", node(), platform())
 
     main()
