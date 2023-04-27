@@ -41,7 +41,7 @@ def get_news_sentiments(time_from: str, time_to: str, api_key: str) -> pd.DataFr
     }
 
     # Send a GET request to the API endpoint and parse the JSON response
-    print(f"Requesting data for {params}")
+    print(f"Requesting sentiments data from Alpha Vantage for {time_from} to {time_to}")
     response = requests.get(
         url,
         params=params,
@@ -51,8 +51,6 @@ def get_news_sentiments(time_from: str, time_to: str, api_key: str) -> pd.DataFr
     # Check if the request was successful
     if response.status_code != 200:
         print(f"Error: Request failed with status code {response.status_code}")
-    else:
-        print(f"Successfully retrieved data with status code {response.status_code}")
 
     # Extract the relevant data for each article and store it in a list of dictionaries
     data = response.json()
@@ -88,7 +86,7 @@ def get_news_sentiments(time_from: str, time_to: str, api_key: str) -> pd.DataFr
     )
 
     # Convert the sentiment data to a Pandas dataframe
-    sentiment_df = pd.DataFrame(articles_data).astype(
+    sentiments_df = pd.DataFrame(articles_data).astype(
         {
             "published_at": "datetime64[ns]",
             "relevance_score": "float64",
@@ -97,147 +95,120 @@ def get_news_sentiments(time_from: str, time_to: str, api_key: str) -> pd.DataFr
     )
 
     # Return the Pandas dataframe from the extracted data
-    return sentiment_df
+    return sentiments_df
 
 
-@flow(name="Process Sentiment Data", log_prints=True)
-def process_news_sentiments(start_date: date, end_date: date, av_api_key: str) -> None:
+@task(name="Get Token Prices", retries=3, retry_delay_seconds=61, log_prints=True)
+def get_prices(start_date: date, pg_api_key: str) -> pd.DataFrame:
     """
-    Orchestrates the daily sentiment data collection for the given time range.
-
-    Args:
-        start_date (str): The start date of the time range to retrieve.
-        end_date (str): The end date of the time range to retrieve.
-        av_api_key (str): The API key required to access the data.
-
-    Returns:
-        pd.DataFrame: A Pandas dataframe containing the extracted data for each news article.
+    Fetches the price data from Polygon.io API for each token in the given list for
+    a given time period.
     """
+
+    # Send a GET request to the API endpoint and parse the JSON response
+    url = f"https://api.polygon.io/v2/aggs/grouped/locale/global/market/crypto/{start_date}"
+    params = {
+        "adjusted": "true",
+        "apiKey": pg_api_key,
+    }
+
+    print("Requesting prices from Polygon.io for {start_date}")
+    response = requests.get(
+        url=url,
+        params=params,
+        timeout=10,
+    )
+
+    # Check if the request was successful
+    if response.status_code != 200:
+        print(f"Error: Request failed with status code {response.status_code}")
+
+    data = response.json()
+
+    # Extract the relevant data for each token and store it in a list of dictionaries
+    prices_data = [
+        {
+            "date": datetime.utcfromtimestamp(int(price["t"]) / 1000).strftime(
+                "%Y-%m-%d"
+            ),
+            "token_symbol": price["T"][2:-3],
+            "pair_token": price["T"][-3:],
+            "close": price["c"],
+            "high": price["h"],
+            "low": price["l"],
+            "open": price["o"],
+            "volume": price["v"],
+        }
+        for price in data["results"]
+    ]
+
+    # Send the extracted data to Prefect Cloud as an artifact
+    create_table_artifact(
+        key="price-data",
+        table=prices_data,
+        description="fff",
+    )
+
+    # Tranform the prices data and clean it
+    prices_df = (
+        pd.DataFrame(prices_data)
+        .astype(
+            {
+                "date": "datetime64[ns]",
+                "close": "float64",
+                "high": "float64",
+                "low": "float64",
+                "open": "float64",
+                "volume": "float64",
+            }
+        )
+        .rename(columns={"base_token": "token_symbol"})
+    )
+    prices_df = prices_df[prices_df["pair_token"] == "USD"]
+    prices_df = prices_df.drop(columns=["pair_token"]).reset_index(drop=True)
+
+    return prices_df
+
+
+@flow(name="ETL Data", log_prints=True)
+def etl_data(
+    start_date: date,
+    end_date: date,
+    av_api_key: str,
+    pg_api_key: str,
+) -> None:
 
     # Load the GCS bucket
     gcs_bucket = GcsBucket.load("default")
 
-    # Iterate through each day in the time range, and fetch and upload the daily sentiment data
+    # Iterate through each day in the time range, and extract, transform and upload the daily data
     while start_date < end_date:
-        sentiment_df = get_news_sentiments(
+        prices_df = get_prices(
+            start_date.strftime("%Y-%m-%d"),
+            pg_api_key,
+        )
+
+        gcs_bucket.upload_from_dataframe(
+            prices_df,
+            f'prices/{start_date.strftime("%Y-%m-%d")}',
+            "parquet_gzip",
+        )
+
+        sentiments_df = get_news_sentiments(
             start_date.strftime("%Y%m%d") + "T0000",
             start_date.strftime("%Y%m%d") + "T2359",
             av_api_key,
         )
 
         gcs_bucket.upload_from_dataframe(
-            sentiment_df,
-            f'sentiment/{start_date.strftime("%Y%m%d")}',
+            sentiments_df,
+            f'sentiments/{start_date.strftime("%Y-%m-%d")}',
             "parquet_gzip",
         )
 
         start_date += timedelta(days=1)
 
-        time.sleep(13)
-
-    return
-
-
-@task(name="Get Tokens List", retries=3, retry_delay_seconds=61, log_prints=True)
-def get_tokens() -> pd.DataFrame:
-    """
-    Fetches a list of cryptocurrency tokens from the CoinGecko API.
-
-    Returns:
-        List[str]: A list of cryptocurrency tokens.
-    """
-
-    # Send a GET request to the API endpoint and parse the JSON response
-    print("Requesting tokens from CoinGecko")
-    response = requests.get(
-        url="https://api.coingecko.com/api/v3/coins/list",
-        timeout=10,
-    )
-
-    # Check if the request was successful
-    if response.status_code != 200:
-        print(f"Error: Request failed with status code {response.status_code}")
-    else:
-        print(f"Successfully retrieved data with status code {response.status_code}")
-
-    data = response.json()
-
-    # Tranform the CoinGecko data and clean it
-    token_ids_df = pd.DataFrame(data)
-    token_ids_df = token_ids_df.rename(columns={"id": "coingecko_id"})
-    token_ids_df = token_ids_df.drop_duplicates(subset=["symbol"])
-    token_ids_df["symbol"] = token_ids_df["symbol"].str.upper().dropna()
-
-    # Get the list of supported tokens from Alpha Vantage and clean it
-    token_list_df = pd.read_csv(
-        filepath_or_buffer="http://www.alphavantage.co/digital_currency_list/",
-        storage_options={"User-Agent": "Mozilla/5.0"},
-    )
-    token_list_df = token_list_df.rename(columns={"currency code": "symbol"})
-    token_list_df = token_list_df.drop_duplicates(subset=["symbol"])
-    token_list_df = token_list_df.drop(columns={"currency name"})
-    token_list_df["symbol"] = token_list_df["symbol"].str.upper().dropna()
-
-    # Merge the two dataframes
-    tokens_df = pd.merge(
-        token_ids_df,
-        token_list_df,
-        how="inner",
-        on="symbol",
-    )
-
-    # Send the extracted data to Prefect Cloud as an artifact
-    create_table_artifact(
-        key="sentiment-data",
-        table=tokens_df.to_dict(),
-        description="List of tokens to get price data for",
-    )
-
-    return tokens_df
-
-
-@task(name="Get Token Prices", retries=3, retry_delay_seconds=61, log_prints=True)
-def get_token_prices(start_date: date, end_date: date) -> None:
-    """
-    Fetches the price data from CoinGecko API for each token in the given list for
-    a given time period.
-    """
-    # Send a GET request to the API endpoint and parse the JSON response
-    print("Requesting prices from CoinGecko")
-    response = requests.get(
-        url="https://api.coingecko.com/api/v3/coins/list",
-        timeout=10,
-    )
-
-    # Check if the request was successful
-    if response.status_code != 200:
-        print(f"Error: Request failed with status code {response.status_code}")
-    else:
-        print(f"Successfully retrieved data with status code {response.status_code}")
-
-    data = response.json()
-
-    # Tranform the CoinGecko data and clean it
-    token_ids_df = pd.DataFrame(data)
-
-    return
-
-
-@flow(name="Process Token List", log_prints=True)
-def process_token_prices(start_date: date) -> None:
-
-    # Load the GCS bucket
-    gcs_bucket = GcsBucket.load("default")
-
-    tokens_df = get_tokens()
-
-    gcs_bucket.upload_from_dataframe(
-        tokens_df,
-        f'tokens/{start_date.strftime("%Y%m%d")}',
-        "parquet_gzip",
-    )
-
-    token_ids = tokens_df["coingecko_id"].tolist()
+        time.sleep(12)
 
     return
 
@@ -246,15 +217,16 @@ def process_token_prices(start_date: date) -> None:
 def main(
     start_date: date = datetime.now(timezone.utc).date() - timedelta(days=1),
     end_date: date = datetime.now(timezone.utc).date(),
-    av_api_key: str = "NDFLAIZ6VJKH5GIJ",
+    av_api_key: str = "AV_API_KEY",
+    pg_api_key: str = "PG_API_KEY",
 ) -> None:
     """
     Sets up Prefect flows for fetching sentiment and market data for a specified time
     and uploading it to a GCS bucket.
     """
 
-    # logger = get_run_logger()
-    # logger.info("Network: %s. Instance: %s. Agent is healthy ✅️", node(), platform())
+    logger = get_run_logger()
+    logger.info("Network: %s. Instance: %s. Agent is healthy ✅️", node(), platform())
 
     # Convert the start and end dates to datetime objects if they are not already
     start_date = (
@@ -268,9 +240,7 @@ def main(
         else datetime.strptime(end_date, "%Y%m%d")
     )
 
-    process_news_sentiments(start_date, end_date, av_api_key)
-
-    process_token_prices(start_date, end_date)
+    etl_data(start_date, end_date, av_api_key, pg_api_key)
 
 
 if __name__ == "__main__":

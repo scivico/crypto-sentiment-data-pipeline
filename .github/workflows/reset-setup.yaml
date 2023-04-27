@@ -146,6 +146,7 @@ jobs:
           av_api_key: ${{ secrets.AV_API_KEY }}
           flow_entrypoint: ${{ steps.get-flow.outputs.entrypoint }}
           gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          pg_api_key: ${{ secrets.PG_API_KEY }}
           prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
           prefect_block: ${{ github.event.inputs.prefect_block }}

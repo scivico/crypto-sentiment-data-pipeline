@@ -10,6 +10,9 @@ inputs:
   gcp_credentials:
     description: "Content of the Service Account JSON key file"
     required: true
+  pg_api_key:
+    description: "Polygon.io API key"
+    required: true
   prefect_api_key:
     description: "Prefect Cloud API key"
     required: true
@@ -68,6 +71,7 @@ runs:
           --storage-block "github/${{ inputs.prefect_block }}" \
           --infra-block "cloud-run-job/${{ inputs.prefect_block }}" \
           --param av_api_key="${{ inputs.av_api_key }}" \
+          --param pg_api_key="${{ inputs.pg_api_key }}" \
           --skip-upload \
           --apply \
           --version $GITHUB_SHA
