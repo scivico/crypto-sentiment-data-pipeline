@@ -1,9 +1,28 @@
 """
 This file contains the Prefect flow for transforming the data in the BigQuery dataset.
 """
-
+import os
 from prefect_gcp.bigquery import BigQueryWarehouse
+from prefect_dbt import DbtCoreOperation
 from prefect import flow, task
+
+
+@task(name="Run dbt models", log_prints=True)
+def run_dbt() -> None:
+    """
+    Runs the dbt models.
+    """
+
+    dbt_path = f"{os.getcwd()}/dbt/fear_and_greed"
+
+    dbt_op = DbtCoreOperation(
+        commands=["dbt build"],
+        working_dir=dbt_path,
+        project_dir=dbt_path,
+        profiles_dir=os.getcwd(),
+    )
+
+    dbt_op.run()
 
 
 @task(name="Create External Table", retries=3, log_prints=True)
@@ -96,27 +115,6 @@ def create_tables(
     return
 
 
-def run_dbt_models(
-    block_name: str,
-) -> None:
-    """
-    Runs the dbt models.
-    """
-    print("Running dbt models")
-    with BigQueryWarehouse.load(block_name) as warehouse:
-        operation = """
-            CALL dbt.run(
-                project => 'crypto_data',
-                models => 'sentiments',
-                full_refresh => True
-            );
-        """
-        warehouse.execute(operation)
-    print("dbt models run")
-
-    return
-
-
 @flow(name="Transform Data", log_prints=True)
 def transform_data(
     block_name: str,
@@ -132,6 +130,8 @@ def transform_data(
         dataset_name=dataset_name,
         bucket_name=bucket_name,
     )
+
+    run_dbt()
 
     return
 

@@ -12,7 +12,7 @@ from prefect.artifacts import create_table_artifact
 from prefect import flow, task
 
 
-@task(name="Get Sentiment Data", retries=3, retry_delay_seconds=61, log_prints=True)
+@task(name="Get Sentiment Data", retries=1, retry_delay_seconds=61, log_prints=True)
 def get_news_sentiments(
     start_date: date,
     api_key: str,
@@ -22,9 +22,8 @@ def get_news_sentiments(
     Alpha Vantage API.
 
     Args:
-        time_from: The start time of the time range to retrieve, in the format "YYYYMMDDTHHMM".
-        time_to: The end time of the time range to retrieve, in the format "YYYYMMDDTHHMM".
-        apikey: The API key required to access the data.
+        start_date: The start date of the time range to retrieve.
+        api_key: The API key required to access the data.
 
     Returns:
         pd.DataFrame: A Pandas dataframe containing the extracted data for each news article.
@@ -161,7 +160,7 @@ def get_token_list() -> pd.DataFrame:
     return tokens_df
 
 
-@task(name="Get Market Data", retries=3, retry_delay_seconds=61, log_prints=True)
+@task(name="Get Market Data", retries=1, retry_delay_seconds=61, log_prints=True)
 def get_market_data(
     start_date: float,
     end_date: float,
@@ -191,6 +190,7 @@ def get_market_data(
     # Check if the request was successful
     if response.status_code != 200:
         print(f"Error: Request failed with status code {response.status_code}")
+        return None
 
     data = response.json()
 
@@ -276,10 +276,16 @@ def proces_news_sentiments(
     # Iterate through each day in the time range, and extract, transform and upload the daily data
     while start_date < end_date:
 
-        sentiments_df = get_news_sentiments(
-            start_date,
-            av_api_key,
-        )
+        try:
+            sentiments_df = get_news_sentiments(
+                start_date,
+                av_api_key,
+            )
+        except Exception:
+            print(
+                f"Error: Failed to get news sentiments for {start_date.strftime('%Y-%m-%d')}"
+            )
+            continue
 
         gcs_bucket.upload_from_dataframe(
             sentiments_df,
@@ -312,7 +318,11 @@ def process_market_data(
     # Load the GCS bucket
     gcs_bucket = GcsBucket.load(block_name)
 
-    tokens_df = get_token_list()
+    try:
+        tokens_df = get_token_list()
+    except Exception:
+        print("Failed to get token list")
+        return
 
     gcs_bucket.upload_from_dataframe(
         tokens_df,
@@ -325,12 +335,16 @@ def process_market_data(
     tokens = tokens_df[["coingecko_id", "symbol"]].values.tolist()
 
     for coingecko_id, symbol in tokens:
-        market_data_df = get_market_data(
-            start_date,
-            end_date,
-            coingecko_id,
-            symbol,
-        )
+        try:
+            market_data_df = get_market_data(
+                start_date,
+                end_date,
+                coingecko_id,
+                symbol,
+            )
+        except Exception:
+            print(f"Failed to get market data for {symbol}")
+            continue
 
         gcs_bucket.upload_from_dataframe(
             market_data_df,
