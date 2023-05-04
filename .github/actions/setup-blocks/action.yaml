@@ -72,8 +72,8 @@ runs:
     - id: set-image
       name: Set Prefect agent docker image name
       run: |
-        echo "RAW_IMAGE=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/${{ inputs.ar_image_name }}" >> $GITHUB_ENV
-        echo "IMAGE_URI=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/${{ inputs.ar_image_name }}:$GITHUB_SHA" >> $GITHUB_ENV
+        echo "RAW_IMAGE=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/deployments" >> $GITHUB_ENV
+        echo "IMAGE_URI=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/deployments:$GITHUB_SHA" >> $GITHUB_ENV
         echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
       shell: bash
 

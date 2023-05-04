@@ -7,11 +7,16 @@ inputs:
   av_api_key:
     description: "Alpha Vantage API key"
     required: true
+  bucket_name:
+    description: Postfix for GCS bucket name
+    required: false
+    default: "raw-crypto-data"
+  dataset_name:
+    description: BigQuery dataset name
+    required: false
+    default: "crypto_data"
   gcp_credentials:
     description: "Content of the Service Account JSON key file"
-    required: true
-  pg_api_key:
-    description: "Polygon.io API key"
     required: true
   prefect_api_key:
     description: "Prefect Cloud API key"
@@ -71,7 +76,9 @@ runs:
           --storage-block "github/${{ inputs.prefect_block }}" \
           --infra-block "cloud-run-job/${{ inputs.prefect_block }}" \
           --param av_api_key="${{ inputs.av_api_key }}" \
-          --param pg_api_key="${{ inputs.pg_api_key }}" \
+          --param bucket_name="$GCP_PROJECT-${{ inputs.bucket_name }}" \
+          --param dataset_name="${{ inputs.dataset_name }}" \
+          --param prefect_block="${{ inputs.prefect_block }}" \
           --skip-upload \
           --apply \
           --version $GITHUB_SHA

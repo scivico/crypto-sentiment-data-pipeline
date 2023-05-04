@@ -13,6 +13,10 @@ inputs:
   prefect_api_url:
     description: "Prefect Cloud API URL"
     required: true
+  prefect_block:
+    description: Standard Prefect blocks name
+    required: false
+    default: "default"
   gcp_region:
     description: "GCP region"
     required: false
@@ -33,10 +37,18 @@ inputs:
     description: "GCP Compute Engine instance name"
     required: false
     default: "prefect-agent"
+  bucket_name:
+    description: Postfix for GCS bucket name
+    required: false
+    default: "raw-crypto-data"
+  dataset_name:
+    description: BigQuery dataset name
+    required: false
+    default: "crypto_data"
   dockerfile_path:
     description: "Path and filename of the Dockerfile"
     required: false
-    default: docker/agent.Dockerfile
+    default: docker/deployments.Dockerfile
 
 runs:
   using: "composite"
@@ -44,8 +56,8 @@ runs:
     - id: set-image
       name: Set Prefect agent docker image name
       run: |
-        echo "RAW_IMAGE=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/agent" >> $GITHUB_ENV
-        echo "IMAGE_URI=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/agent:$GITHUB_SHA" >> $GITHUB_ENV
+        echo "RAW_IMAGE=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/deployments" >> $GITHUB_ENV
+        echo "IMAGE_URI=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/deployments:$GITHUB_SHA" >> $GITHUB_ENV
         echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
       shell: bash
 
@@ -64,6 +76,9 @@ runs:
           --quiet \
           --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} \
           --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} \
+          --build-arg PREFECT_BLOCK=${{ inputs.prefect_block }} \
+          --build-arg DATASET_NAME=${{ inputs.dataset_name }} \
+          --build-arg BUCKET_NAME=$GCP_PROJECT-${{ inputs.bucket_name }} \
           --tag "${{ env.RAW_IMAGE }}" \
           --file ${{ inputs.dockerfile_path }} .
         docker tag "${{ env.RAW_IMAGE }}" "${{ env.IMAGE_URI }}"

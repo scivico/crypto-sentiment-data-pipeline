@@ -94,6 +94,21 @@ jobs:
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
           vm_name: ${{ github.event.inputs.vm_name }}
 
+      - id: setup-cloud-run
+        name: Setup Cloud Run environment
+        uses: ./.github/actions/setup-cloud-run
+        with:
+          ar_repository: ${{ github.event.inputs.ar_repository }}
+          bucket_name: ${{ github.event.inputs.bucket_name }}
+          dataset_name: ${{ github.event.inputs.dataset_name }}
+          gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          gcp_region: ${{ github.event.inputs.gcp_region }}
+          gcp_zone: ${{ github.event.inputs.gcp_zone }}
+          prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
+          prefect_api_url: ${{ secrets.PREFECT_API_URL }}
+          prefect_block: ${{ github.event.inputs.prefect_block }}
+          vm_name: ${{ github.event.inputs.vm_name }}
+
       - id: setup-blocks
         name: Setup Prefect blocks
         uses: ./.github/actions/setup-blocks
@@ -137,6 +152,16 @@ jobs:
         name: Checkout
         uses: actions/checkout@v3
 
+      - id: login-gcloud
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - id: setup-sdk
+        name: Configure Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
       - id: get-flow
         name: Get Prefect flow entrypoint
         run: |
@@ -149,9 +174,10 @@ jobs:
         uses: ./.github/actions/setup-deployment
         with:
           av_api_key: ${{ secrets.AV_API_KEY }}
+          bucket_name: ${{ github.event.inputs.bucket_name }}
+          dataset_name: ${{ github.event.inputs.dataset_name }}
           flow_entrypoint: ${{ steps.get-flow.outputs.entrypoint }}
           gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
-          pg_api_key: ${{ secrets.PG_API_KEY }}
           prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
           prefect_block: ${{ github.event.inputs.prefect_block }}
