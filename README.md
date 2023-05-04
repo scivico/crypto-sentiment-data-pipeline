@@ -25,9 +25,13 @@ To help combat this issue, I decided to create an automated data pipeline that w
 
 ## Dashboard Example
 
-[Dashboard Example](https://raw.githubusercontent.com/kkuznets/crypto-fear-and-greed-analysis/main/assets/images/Dashboard%20Example.png)
+<img width="1438" alt="SH 2023-05-05 at 1 16 16 am" src="https://user-images.githubusercontent.com/60260298/236252056-0af255b0-18c6-475d-8a13-b6cddf7b0607.png">
 
-## Findings
+## Some findings
+
+- After investigating the correlation between public sentiment for a given token (I mostly looked at BTC, ETH and MATIC), I noticed that while positive news articles don't seem to impact the public opinion very quickly, negative press results in a very drastic decrease of the public's opinion about a cryptocurrency.
+- There seems to be a delay of approximately a month between the overall token sentiment getting positive and public's opinion following it. It might be that there needs to be critical mass of positive news articles before people start paying attention to a given token again.
+- Stablecoins, by their nature, were not affected by the negative press. However, several instances of failure of stablecoins to support their designed price resulted in horrible news sentiment in the past.
 
 ## To reproduce
 
