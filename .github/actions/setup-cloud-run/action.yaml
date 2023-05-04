@@ -85,15 +85,3 @@ runs:
         docker push "${{ env.RAW_IMAGE }}"
         docker push "${{ env.IMAGE_URI }}"
       shell: bash
-
-    - id: deploy-vm
-      name: Deploy Prefect Agent VM
-      shell: bash
-      run: |
-        export EMAIL=$(cat $GOOGLE_GHA_CREDS_PATH | jq -r '.["client_email"]')
-        gcloud compute instances create-with-container ${{ inputs.vm_name }} \
-          --zone ${{ inputs.gcp_zone }} \
-          --machine-type ${{ inputs.vm_type }} \
-          --service-account $EMAIL \
-          --scopes "cloud-platform" \
-          --container-image "${{ env.IMAGE_URI }}"
