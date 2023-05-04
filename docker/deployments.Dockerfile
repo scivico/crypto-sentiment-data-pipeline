@@ -46,8 +46,8 @@ RUN curl -sSL https://install.python-poetry.org | python - \
     && poetry config virtualenvs.create false --local \
     && poetry install --without dev --no-root
 
-RUN touch profiles.yml && \
-    echo "fear_and_greed_crypto_analysis:" >> profiles.yml && \
+RUN touch profiles.yaml && \
+    echo "fear_and_greed:" >> profiles.yml && \
     echo "  outputs:" >> profiles.yml && \
     echo "    dev:" >> profiles.yml && \
     echo "      dataset: ${DATASET_NAME}" >> profiles.yml && \
