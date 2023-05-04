@@ -134,12 +134,3 @@ def transform_data(
     run_dbt()
 
     return
-
-
-# if __name__ == "__main__":
-
-#     transform_data(
-#         block_name="default",
-#         dataset_name="crypto_data",
-#         bucket_name="invertible-vine-382705-raw-crypto-data",
-#     )

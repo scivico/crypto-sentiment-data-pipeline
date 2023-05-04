@@ -1,6 +1,5 @@
 """
-This module contains a Prefect flow for fetching news articles sentiment data from an API for a
-specified time range, and storing the data in a Pandas DataFrame.
+This module orchestrates the different process of the main ELT pipeline.
 """
 from datetime import timedelta, date, datetime, timezone
 from platform import node, platform
