@@ -25,7 +25,9 @@ To help combat this issue, I decided to create an automated data pipeline that w
 
 ## Dashboard Example
 
-Findings
+[Dashboard Example](https://raw.githubusercontent.com/kkuznets/crypto-fear-and-greed-analysis/main/assets/images/Dashboard%20Example.png)
+
+## Findings
 
 ## To reproduce
 
