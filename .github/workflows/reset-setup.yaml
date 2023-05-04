@@ -46,6 +46,10 @@ on:
         required: true
         default: "default"
         type: string
+    on:
+      push:
+        branches:
+          - main
 
 jobs:
   setup-infra:
@@ -66,27 +70,19 @@ jobs:
         name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - id: delete-vm
-        name: Terminate existing Prefect agent
-        run: |
-          gcloud compute instances delete "${{ github.event.inputs.vm_name }}" \
-            --zone="${{ github.event.inputs.gcp_zone }}" \
-            --quiet \
-            --verbosity=error
-        continue-on-error: true
-        shell: bash
-
-      - id: setup-agent
-        name: Setup and deploy Prefect agent
-        uses: ./.github/actions/setup-agent
+      - id: setup-cloud-run
+        name: Reset Cloud Run environment
+        uses: ./.github/actions/setup-cloud-run
         with:
           ar_repository: ${{ github.event.inputs.ar_repository }}
-          dockerfile_path: docker/Dockerfile
+          bucket_name: ${{ github.event.inputs.bucket_name }}
+          dataset_name: ${{ github.event.inputs.dataset_name }}
           gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
           gcp_region: ${{ github.event.inputs.gcp_region }}
           gcp_zone: ${{ github.event.inputs.gcp_zone }}
           prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
+          prefect_block: ${{ github.event.inputs.prefect_block }}
           vm_name: ${{ github.event.inputs.vm_name }}
 
       - id: setup-blocks

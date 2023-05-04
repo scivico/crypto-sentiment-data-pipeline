@@ -16,9 +16,7 @@ def main(
     start_date: date = datetime.now(timezone.utc).date() - timedelta(days=1),
     end_date: date = datetime.now(timezone.utc).date(),
     block_name: str = "default",
-    dataset_name: str = "crypto_data",
-    bucket_name: str = "invertible-vine-382705-raw-crypto-data",
-    av_api_key: str = "NDFLAIZ6VJKH5GIJ",
+    av_api_key: str = "SAMPLE_KEY",
 ) -> None:
     """
     Sets up Prefect flows for fetching sentiment and market data for a specified time

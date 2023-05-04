@@ -61,14 +61,6 @@ runs:
         echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - id: login-gar
-      name: Login to GAR
-      uses: docker/login-action@v2
-      with:
-        registry: "${{ inputs.gcp_region }}-docker.pkg.dev"
-        username: _json_key
-        password: ${{ inputs.gcp_credentials }}
-
     - id: build-image
       name: Build and push Prefect agent docker image
       run: |

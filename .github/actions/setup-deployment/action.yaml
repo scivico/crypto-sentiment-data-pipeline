@@ -76,9 +76,7 @@ runs:
           --storage-block "github/${{ inputs.prefect_block }}" \
           --infra-block "cloud-run-job/${{ inputs.prefect_block }}" \
           --param av_api_key="${{ inputs.av_api_key }}" \
-          --param bucket_name="$GCP_PROJECT-${{ inputs.bucket_name }}" \
-          --param dataset_name="${{ inputs.dataset_name }}" \
-          --param prefect_block="${{ inputs.prefect_block }}" \
+          --param block_name="${{ inputs.prefect_block }}" \
           --skip-upload \
           --apply \
           --version $GITHUB_SHA

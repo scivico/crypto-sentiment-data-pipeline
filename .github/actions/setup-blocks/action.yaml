@@ -69,14 +69,6 @@ runs:
         poetry run prefect config set PREFECT_API_URL=${{ inputs.prefect_api_url }}
       shell: bash
 
-    - id: set-image
-      name: Set Prefect agent docker image name
-      run: |
-        echo "RAW_IMAGE=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/deployments" >> $GITHUB_ENV
-        echo "IMAGE_URI=${{ inputs.gcp_region }}-docker.pkg.dev/$GCP_PROJECT/${{ inputs.ar_repository }}/deployments:$GITHUB_SHA" >> $GITHUB_ENV
-        echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
-      shell: bash
-
     - id: create-blocks
       name: Create Prefect blocks
       run: |
@@ -115,7 +107,8 @@ runs:
             image="${{ env.IMAGE_URI }}",
             region="${{ inputs.gcp_region }}",
             credentials=gcp_credentials,
-            cpu=2,
+            cpu=8,
+            memory=32,
             timeout=3600,
         )
         cloudrun_block.save(
