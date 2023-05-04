@@ -140,3 +140,6 @@ dmypy.json
 
 # temp
 extract-data.ipynb
+gcp_credentials.json
+.user.yml
+profiles.yml
