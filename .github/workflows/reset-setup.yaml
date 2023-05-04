@@ -74,9 +74,9 @@ jobs:
         name: Login to GAR
         uses: docker/login-action@v2
         with:
-          registry: "${{ inputs.gcp_region }}-docker.pkg.dev"
+          registry: "${{ github.event.inputs.gcp_region }}-docker.pkg.dev"
           username: _json_key
-          password: ${{ inputs.gcp_credentials }}
+          password: ${{ secrets.GCP_CREDENTIALS }}
 
       - id: setup-cloud-run
         name: Reset Cloud Run environment
