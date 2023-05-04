@@ -56,14 +56,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - id: login-gar
-      name: Login to GAR
-      uses: docker/login-action@v2
-      with:
-        registry: "${{ inputs.gcp_region }}-docker.pkg.dev"
-        username: _json_key
-        password: ${{ inputs.gcp_credentials }}
-
     - id: set-image
       name: Set Prefect agent docker image name
       run: |
@@ -75,7 +67,7 @@ runs:
     - id: encode-gcp-creds
       name: Encode GCP credentials
       run: |
-        echo "GCP_CREDENTIALS_64=$(echo ${{ inputs.gcp_credentials }} | base64)" >> $GITHUB_ENV
+        echo "GCP_CREDENTIALS_64=$(echo -n '${{ inputs.gcp_credentials' }} | base64)" >> $GITHUB_ENV
       shell: bash
 
     - id: build-image
