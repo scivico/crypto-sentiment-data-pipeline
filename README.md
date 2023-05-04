@@ -19,7 +19,7 @@ To help combat this issue, I decided to create an automated data pipeline that w
 - Cloud Run: receives daily jobs and executes them in a serveless environment.
 - Cloud Storage: acts as a staging area for the raw market and token data.
 - BigQuery: is a main data warehouse, creates external tables from the GCS bucket and the tables from dbt models.
-- dbt Core: transforms data in BigQuery and makes it queryable for Superset.
+- dbt Core: transforms data in BigQuery and makes it queryable for Superset by partitioning the table containing news sentiments.
 - GitHub: hosts the source code and enables CI/CD with GitHub Actions.
 - Apache Superset: builds analytics dashboards and visualisations for analysis.
 
@@ -78,7 +78,7 @@ gcloud iam service-accounts keys create sa_key.json --iam-account="$GCP_SA_NAME"
   - This step will prepare the GCP infrastructure for you, deploy the Python code to Prefect Cloud, and build and start the Prefect agent VM in order to run the Prefect flows.
   - If you edit the default variables, you might need to edit the dbt Core project settings and schema file in the folder to make sure they match all of the variables you edited.
 - Once the previous step is finished, you can navigate back to your Prefect Cloud and view the flow deployments. Click on the deployment for the flow `Main Flow` and when its page opens, click to add a schedule that you prefer so that the data gets fetched regularly automatically.
-  - You can also click to `Custom Run` this deployment and specify the **start_date** and **end_date** parameters in order to fetch historical data for a time period of your choice. Make sure you enter them in the format **%Y%m%d**, i.e **20221127**.
+  - You can also click to `Custom Run` this deployment and specify the **start_date** and **end_date** parameters in order to fetch historical data for a time period of your choice. Make sure you enter them in the format **%Y%m%d**, i.e **20221127**. This functionality requires the **sentiments_t** table to be partitioned by dbt in order to make queries on it from Superset more efficient.
 - That's it! The transformed data will be available in BigQuery after the first deployment run. News sentiments data will be located in the table **sentiments_t** and token price information will be located in the table **prices_t**.
 - If you make any changes to the Prefect flows, dbt Core models or GitHub Actions workflows, you should run the GitHub action `Reset Setup` that will re-build the Cloud Run jobs image and re-deploy Prefect flows.
 - If you want to remove the whol setup for this project, you can run the GitHub action `Delete Setup` which will delete all GCP services that were created in the steps above.
