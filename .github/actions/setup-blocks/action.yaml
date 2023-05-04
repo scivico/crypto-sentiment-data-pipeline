@@ -69,6 +69,14 @@ runs:
         poetry run prefect config set PREFECT_API_URL=${{ inputs.prefect_api_url }}
       shell: bash
 
+    - id: login-gar
+      name: Login to GAR
+      uses: docker/login-action@v2
+      with:
+        registry: "${{ inputs.gcp_region }}-docker.pkg.dev"
+        username: _json_key
+        password: ${{ inputs.gcp_credentials }}
+
     - id: create-blocks
       name: Create Prefect blocks
       run: |

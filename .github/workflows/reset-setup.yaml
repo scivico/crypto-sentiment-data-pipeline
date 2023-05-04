@@ -117,7 +117,7 @@ jobs:
         shell: bash
 
   setup-deployment:
-    name: Setup Prefect deployment
+    name: Reset Prefect deployment
     needs: collect-flows
     runs-on: ubuntu-latest
     strategy:
