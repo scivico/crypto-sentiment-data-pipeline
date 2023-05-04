@@ -46,10 +46,6 @@ on:
         required: true
         default: "default"
         type: string
-    on:
-      push:
-        branches:
-          - main
 
 jobs:
   setup-infra:
