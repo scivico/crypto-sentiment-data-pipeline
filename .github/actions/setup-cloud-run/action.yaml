@@ -4,6 +4,9 @@ branding:
   icon: cloud
   color: yellow
 inputs:
+  av_api_key:
+    description: "Alpha Vantage API key"
+    required: true
   gcp_credentials:
     description: "Content of the Service Account JSON key file"
     required: true
@@ -77,8 +80,12 @@ runs:
           --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} \
           --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} \
           --build-arg PREFECT_BLOCK=${{ inputs.prefect_block }} \
+          --build-arg GCP_CREDENTIALS=${{ inputs.gcp_credentials }} \
+          --build-arg GCP_PROJECT=$GCP_PROJECT \
+          --build-arg GCP_REGION=${{ inputs.gcp_region }} \
           --build-arg DATASET_NAME=${{ inputs.dataset_name }} \
           --build-arg BUCKET_NAME=$GCP_PROJECT-${{ inputs.bucket_name }} \
+          --build-arg AV_API_KEY=${{ inputs.av_api_key }} \
           --tag "${{ env.RAW_IMAGE }}" \
           --file ${{ inputs.dockerfile_path }} .
         docker tag "${{ env.RAW_IMAGE }}" "${{ env.IMAGE_URI }}"

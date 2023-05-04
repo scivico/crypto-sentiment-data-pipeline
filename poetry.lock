@@ -4,7 +4,7 @@
 name = "agate"
 version = "1.6.3"
 description = "A data analysis library that is optimized for humans instead of machines."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -191,7 +191,7 @@ tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pyte
 name = "babel"
 version = "2.12.1"
 description = "Internationalization utilities"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -555,7 +555,7 @@ langdetect = ["langdetect"]
 name = "dbt-bigquery"
 version = "1.5.0"
 description = "The Bigquery adapter plugin for dbt"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -574,7 +574,7 @@ google-cloud-storage = ">=2.4,<3.0"
 name = "dbt-core"
 version = "1.5.0"
 description = "With dbt, data analysts and engineers can build analytics the way engineers build applications."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7.2"
 files = [
@@ -610,7 +610,7 @@ werkzeug = ">=1,<3"
 name = "dbt-extractor"
 version = "0.4.1"
 description = "A tool to analyze and extract information from Jinja used in dbt projects."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.1"
 files = [
@@ -733,7 +733,7 @@ tqdm = ["tqdm"]
 name = "future"
 version = "0.18.3"
 description = "Clean single-source support for Python 3 and 2"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 files = [
@@ -916,7 +916,7 @@ grpc = ["grpcio (>=1.38.0,<2.0dev)"]
 name = "google-cloud-dataproc"
 version = "5.4.1"
 description = "Google Cloud Dataproc API client library"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1078,7 +1078,7 @@ grpc = ["grpcio (>=1.44.0,<2.0.0dev)"]
 name = "graphql-core"
 version = "3.2.3"
 description = "GraphQL implementation for Python, a port of GraphQL.js, the JavaScript reference implementation for GraphQL."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6,<4"
 files = [
@@ -1182,7 +1182,7 @@ async = ["aiofiles (>=0.7,<1.0)"]
 name = "grpc-google-iam-v1"
 version = "0.12.6"
 description = "IAM API client library"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1302,7 +1302,7 @@ hyperframe = ">=6.0,<7"
 name = "hologram"
 version = "0.0.16"
 description = "JSON schema generation from dataclasses"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -1416,7 +1416,7 @@ files = [
 name = "isodate"
 version = "0.6.1"
 description = "An ISO 8601 date/time/duration parser and formatter"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -1541,7 +1541,7 @@ adal = ["adal (>=1.0.2)"]
 name = "leather"
 version = "0.3.4"
 description = "Python charting for 80% of humans."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -1556,7 +1556,7 @@ six = ">=1.6.1"
 name = "logbook"
 version = "1.5.3"
 description = "A logging replacement for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -1706,7 +1706,7 @@ files = [
 name = "mashumaro"
 version = "3.6"
 description = "Fast serialization library on top of dataclasses"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1752,7 +1752,7 @@ files = [
 name = "minimal-snowplow-tracker"
 version = "0.0.2"
 description = "A minimal snowplow event tracker for Python. Add analytics to your Python and Django apps, webapps and games"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -1767,7 +1767,7 @@ six = ">=1.9.0,<2.0"
 name = "msgpack"
 version = "1.0.5"
 description = "MessagePack serializer"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -1852,7 +1852,7 @@ files = [
 name = "networkx"
 version = "2.8.8"
 description = "Python package for creating and manipulating graphs and networks"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
@@ -2071,7 +2071,7 @@ xml = ["lxml (>=4.6.3)"]
 name = "parsedatetime"
 version = "2.4"
 description = "Parse human-readable date/time text."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -2203,7 +2203,7 @@ dev = ["autoflake8", "cairosvg", "flake8", "flaky", "ipython", "jinja2", "mike",
 name = "prefect-dbt"
 version = "0.3.1"
 description = "Prefect integration for working with dbt"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2258,7 +2258,7 @@ secret-manager = ["google-cloud-secret-manager"]
 name = "prefect-shell"
 version = "0.1.5"
 description = "Prefect tasks and subflows for interacting with shell commands."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2550,21 +2550,6 @@ files = [
 six = ">=1.5"
 
 [[package]]
-name = "python-dotenv"
-version = "1.0.0"
-description = "Read key-value pairs from a .env file and set them as environment variables"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "python-dotenv-1.0.0.tar.gz", hash = "sha256:a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba"},
-    {file = "python_dotenv-1.0.0-py3-none-any.whl", hash = "sha256:f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a"},
-]
-
-[package.extras]
-cli = ["click (>=5.0)"]
-
-[[package]]
 name = "python-slugify"
 version = "8.0.1"
 description = "A Python slugify application that also handles Unicode"
@@ -2586,7 +2571,7 @@ unidecode = ["Unidecode (>=1.1.1)"]
 name = "pytimeparse"
 version = "1.1.8"
 description = "Time expression parser"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -2888,7 +2873,7 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 name = "sgqlc"
 version = "16.1"
 description = "Simple GraphQL Client"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -3007,7 +2992,7 @@ sqlcipher = ["sqlcipher3-binary"]
 name = "sqlparse"
 version = "0.4.3"
 description = "A non-validating SQL parser."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.5"
 files = [
@@ -3282,7 +3267,7 @@ files = [
 name = "werkzeug"
 version = "2.3.3"
 description = "The comprehensive WSGI web application library."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
@@ -3299,4 +3284,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c628f70e5ee3a20ad52b2b9f9cfb594bb2c6254b55846bb133ef7a6b35569933"
+content-hash = "8668c6bb63709b9bada205f5112a0334048833ab469f35c02f1af954b45bbfd5"

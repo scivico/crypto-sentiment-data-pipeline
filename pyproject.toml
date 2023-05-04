@@ -11,15 +11,14 @@ packages = [{include = "crypto_fear_and_greed_analysis"}]
 python = "^3.10"
 prefect = "^2.10.4"
 prefect-gcp = {extras = ["artifacts", "bigquery", "cloud-storage"], version = "^0.4.1"}
-dbt-core = "^1.5.0"
-dbt-bigquery = "^1.5.0"
-prefect-dbt = "^0.3.1"
-python-dotenv = "^1.0.0"
 
 [tool.poetry.group.prefect.dependencies]
 pandas = "^2.0.0"
 requests = "^2.28.2"
 pyarrow = "^11.0.0"
+dbt-core = "^1.5.0"
+dbt-bigquery = "^1.5.0"
+prefect-dbt = "^0.3.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
