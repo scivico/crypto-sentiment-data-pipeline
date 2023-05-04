@@ -23,6 +23,10 @@ To help combat this issue, I decided to create an automated data pipeline that w
 - GitHub: hosts the source code and enables CI/CD with GitHub Actions.
 - Apache Superset: builds analytics dashboards and visualisations for analysis.
 
+## Dashboard Example
+
+Findings
+
 ## To reproduce
 
 This project aims to make it as easy as possible to copy the pipeline over and start playing with it.
