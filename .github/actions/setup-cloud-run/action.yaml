@@ -72,6 +72,12 @@ runs:
         echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
       shell: bash
 
+    - id: encode-gcp-creds
+      name: Encode GCP credentials
+      run: |
+        echo "GCP_CREDENTIALS_64=$(echo ${{ inputs.gcp_credentials }} | base64)" >> $GITHUB_ENV
+      shell: bash
+
     - id: build-image
       name: Build and push Prefect agent docker image
       run: |
@@ -80,7 +86,7 @@ runs:
           --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} \
           --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} \
           --build-arg PREFECT_BLOCK=${{ inputs.prefect_block }} \
-          --build-arg GCP_CREDENTIALS="${{ inputs.gcp_credentials }}" \
+          --build-arg GCP_CREDENTIALS=${{ env.GCP_CREDENTIALS_64 }} \
           --build-arg GCP_PROJECT=$GCP_PROJECT \
           --build-arg GCP_REGION=${{ inputs.gcp_region }} \
           --build-arg DATASET_NAME=${{ inputs.dataset_name }} \
