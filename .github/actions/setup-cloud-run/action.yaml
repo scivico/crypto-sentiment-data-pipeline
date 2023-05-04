@@ -80,7 +80,7 @@ runs:
           --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} \
           --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} \
           --build-arg PREFECT_BLOCK=${{ inputs.prefect_block }} \
-          --build-arg GCP_CREDENTIALS=${{ inputs.gcp_credentials }} \
+          --build-arg GCP_CREDENTIALS="${{ inputs.gcp_credentials }}" \
           --build-arg GCP_PROJECT=$GCP_PROJECT \
           --build-arg GCP_REGION=${{ inputs.gcp_region }} \
           --build-arg DATASET_NAME=${{ inputs.dataset_name }} \
