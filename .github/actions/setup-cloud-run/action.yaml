@@ -67,7 +67,8 @@ runs:
     - id: encode-gcp-creds
       name: Encode GCP credentials
       run: |
-        echo "GCP_CREDENTIALS_64=$(echo -n '${{ inputs.gcp_credentials }}' | base64)" >> $GITHUB_ENV
+        base64_encoded=$(echo -n "${{ inputs.gcp_credentials }}" | base64)
+        echo "GCP_CREDENTIALS_64=$(echo '$base64_encoded')" >> $GITHUB_ENV
       shell: bash
 
     - id: build-image
