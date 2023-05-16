@@ -27,8 +27,6 @@ As a fellow crypto enthusiast, I noticed how hard it is to fetch any detailed in
 
 To help combat this issue, I decided to create an automated data pipeline that would fetch the information requried to perform fear-and-greed analysis on any of the popular cryptocurrencies. It fetches current data daily by default and lets users fetch historical records for any time period.
 
-<<<<<<< Updated upstream
-
 ## Tools used
 
 - Python: Controls the data extraction, pre-processing, loading and transformation routines.
@@ -43,10 +41,6 @@ To help combat this issue, I decided to create an automated data pipeline that w
 - dbt Core: transforms data in BigQuery and makes it queryable for Superset by partitioning the table containing news sentiments.
 - GitHub: hosts the source code and enables CI/CD with GitHub Actions.
 - Apache Superset: builds analytics dashboards and visualisations for analysis.
-
-=======
-
-> > > > > > > Stashed changes
 
 ## Dashboard Example
 
