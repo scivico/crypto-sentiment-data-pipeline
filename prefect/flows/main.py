@@ -1,5 +1,5 @@
 """
-This module orchestrates the different process of the main ELT pipeline.
+This module orchestrates the different processes of the main ELT pipeline.
 """
 from datetime import timedelta, date, datetime, timezone
 from platform import node, platform
@@ -20,17 +20,23 @@ def main(
     av_api_key: str = "SAMPLE_API_KEY",
 ) -> None:
     """
-    Sets up Prefect flows for fetching sentiment and market data for a specified time
-    and uploading it to a GCS bucket.
+    Sets up Prefect flows for fetching, pre-processing, loading and transforming data.
     """
 
     logger = get_run_logger()
     logger.info("Network: %s. Instance: %s. Agent is healthy ✅️", node(), platform())
 
     # Convert the start and end dates to datetime objects if they are not already
-    start_date = datetime.strptime("20220501", "%Y%m%d").date()
-
-    end_date = datetime.strptime("20230501", "%Y%m%d").date()
+    start_date = (
+        start_date
+        if isinstance(start_date, date)
+        else datetime.strptime(start_date, "%Y%m%d").date()
+    )
+    end_date = (
+        end_date
+        if isinstance(end_date, date)
+        else datetime.strptime(end_date, "%Y%m%d").date()
+    )
 
     extract_load_data(
         start_date=start_date,

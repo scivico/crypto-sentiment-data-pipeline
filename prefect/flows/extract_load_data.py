@@ -1,6 +1,6 @@
 """
-This module contains a Prefect flow for fetching news articles sentiment data from an API for a
-specified time range, and storing the data in a Pandas DataFrame.
+This module contains a Prefect flow for fetching news articles sentiment data and market data
+from the APIs for a specified time range, pre-processing it and uploading it to GCS.
 """
 import time
 from datetime import timedelta, date, datetime, time as dt_time
@@ -359,7 +359,7 @@ def process_market_data(
     return
 
 
-@flow(name="ETL Data", log_prints=True)
+@flow(name="EL Data", log_prints=True)
 def extract_load_data(
     start_date: date,
     end_date: date,
@@ -367,7 +367,7 @@ def extract_load_data(
     av_api_key: str,
 ) -> None:
     """
-    Orchestrates the ETL process for the given time period.
+    Orchestrates the EL process for the given time period.
     """
 
     proces_news_sentiments(start_date, end_date, block_name, av_api_key)

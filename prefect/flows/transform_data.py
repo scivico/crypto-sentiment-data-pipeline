@@ -1,5 +1,5 @@
 """
-This file contains the Prefect flow for transforming the data in the BigQuery dataset.
+This file contains the Prefect flow for transforming the data in BigGquery with DBT.
 """
 import os
 from prefect_gcp.bigquery import BigQueryWarehouse
