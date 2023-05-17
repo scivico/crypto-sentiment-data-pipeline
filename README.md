@@ -1,8 +1,8 @@
 # Crypto Market Sentiment Data Pipeline & Analysis
 
-This project attemps to engineer a comprehensive Extract, Load, Transform (ELT) data pipeline within the Google Cloud Platform (GCP).
+This project attempts to engineer a comprehensive Extract, Load, Transform (ELT) data pipeline on the cryptocurrency market & sentiment data within the Google Cloud Platform (GCP).
 
-The pipeline is congured to process sentiment and market data daily for more than 500 of the largest cryptocurrencies and make it available for analysis. It also also capable of collecting historical data for any time range.
+The pipeline is configured to process sentiment and market data daily for more than 500 of the largest cryptocurrencies and make it available for fear-and-greed analysis. It is also capable of collecting historical data for any time range.
 
 To achieve this, various tools such as Prefect, Cloud Storage, BigQuery, dbt, Superset, and others are utilized.
 
@@ -12,7 +12,7 @@ Obtaining comprehensive historical data and news articles for cryptocurrency mar
 
 This fully automated data pipeline addresses this issue by fetching daily and historical data from multiple providers, including Alpha Vantage and CoinGecko. By default, the pipeline retrieves daily current data and enables users to retrieve historical records for any desired time period.
 
-This pipeline is developed to be fully hosted on GCP and is orchestrated with Prefect, so it doesn't require manual involvolvement. The section below describes its inner workings in greater detail.
+This pipeline is developed to be fully hosted on GCP and is orchestrated with Prefect, so it doesn't require any manual involvolvement. The section below describes its inner workings in greater detail.
 
 ## Tech Stack
 
