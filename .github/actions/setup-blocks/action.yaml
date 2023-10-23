@@ -110,7 +110,7 @@ runs:
             cpu=8,
             memory=32,
             memory_unit="Gi",
-            timeout=14400,
+            timeout=3600,
         )
         cloudrun_block.save(
             "${{ inputs.prefect_block }}",
