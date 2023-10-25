@@ -165,7 +165,7 @@ jobs:
       - id: get-flow
         name: Get Prefect flow entrypoint
         run: |
-          export FLOW_NAME=$(basename ${{ matrix.flows }})
+          export FLOW_NAME=$(basename ${{ matrix.flows }} .py)
           echo "entrypoint=${{ matrix.flows }}:$FLOW_NAME" >> $GITHUB_OUTPUT
         shell: bash
 
